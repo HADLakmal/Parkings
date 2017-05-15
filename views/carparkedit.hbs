@@ -1,0 +1,42 @@
+{{>carparkheader}}
+
+<form  method="post" action="/users/carparkedit" >
+    <div class="form-group">
+        <label> Name </label>
+        <input class="form-control" name="name" type="text" placeholder="Enter your Name">
+    </div>
+    <div class="form-group">
+        <label>Mobile Number </label>
+        <input  class="form-control"  id="number" name="number" type="text" placeholder="Enter your mobile number" onchange="validateNumber()" required>
+    </div>
+    <div class="form-group">
+        <label>Price Of Ordering Car Parking Slot </label>
+        <input  class="form-control"  id="price" name="price" onchange="valid()" type="text" placeholder="Odering available Enter the Price" >
+    </div>
+
+    <input class="form-control" name="submit" type="submit" value="register">
+
+</form>
+
+<script>
+
+    function valid(){
+        var price = document.getElementById("price").value;
+        if(isNaN(price)){
+            window.alert("Enter only the numbers");
+            }
+    }
+
+    function validateNumber() {
+            var number = document.getElementById("number").value;
+            if(number.length==10){
+                if(isNaN(number)){
+                    window.alert("Enter only the numbers");
+                }
+            }
+            else{
+                window.alert("Enter the number begining with 07..."+number.length)
+            }
+        }
+
+</script>

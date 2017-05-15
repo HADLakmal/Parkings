@@ -1,0 +1,307 @@
+
+{{> userHeader}}
+
+
+<style>
+    #map-canvas {
+        height: 400px;
+        width: 100%;
+    }
+    #direction-canvas{
+        height: 400px;
+        width: 100%;
+
+    }
+    #destiation{
+        height: 40px;
+        width: 100%;
+    }
+    #start{
+        height: 40px;
+        width: 100%;
+    }
+</style>
+<div class="tab">
+    <button style="width: 33%" class="btn btn-lg btn-primary" onclick="openTab(event, 'CuLocation'),getLocation(),getMapLocation()">Current Location</button>
+    <button style="width: 33%" class="btn btn-lg btn-success" onclick="openTab(event, 'Distance'),initMapMarker()">Distance</button>
+    <button style="width: 33%" class="btn btn-lg btn-warning" onclick="openTab(event, 'CarPark')">Nearest Car Parks</button>
+</div>
+
+<div id="CuLocation" class="tabcontent">
+    <h3 style="text-align: center">Current Location</h3>
+    <div id="geoLocation"></div>
+    <div id="map-canvas" ></div>
+</div>
+
+<div id="Distance" class="tabcontent">
+    <h3 style="text-align: center">Distance</h3>
+
+    <div style="text-align: center" action=routing method= 'post' class="center" >
+        <input class="form-control" id="start" name="start" type="text" placeholder="From" style="width: 33%;margin-left: 33.3%" required>
+        <select id="destination" class="form-control" style="width: 33%;margin-left: 33.3%" required>
+            {{#each parks}}
+                {{#each this}}
+                    <option value="{{this.address}}">{{this.address}}</option>
+                {{/each}}
+            {{/each}}
+
+        </select>
+
+        <input onclick="initMapDirection()" type="submit" name="submit" value="Direction" style="width: 33%;margin-top: 10px" class="btn btn-lg btn-primary">
+    </div>
+    <div id="direction-canvas"></div>
+</div>
+
+<div id="CarPark" class="tabcontent">
+    <h3>Nearest Parking List</h3>
+    <div class="container">
+        {{# each parks}}
+            <div class="row">
+                {{# each this}}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="thumbnail">
+                            <img src="{{this.image}}" alt="...">
+                            <div class="caption">
+                                <h3>{{this.userName}}</h3>
+                                <p class="discription">
+                                    <div>
+                                    Contact : {{this.number}}
+                                    </div>
+                                    <div>
+                                        Email : {{this.email}}
+                                    </div>
+                                </p>
+                                <div class="clearfix">
+                                    <a href="#" class="btn btn-primary pull-left" role="button">Location</a>
+                                    <a href="/users/order?reserve={{this.email}}" class="btn btn-success pull-right" role="button">Reservation</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        {{/each}}
+    </div>
+
+</div>
+<script >
+
+    var x = document.getElementById("geoLocation");
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+    function showPosition(position) {
+        x.innerHTML = "Latitude: " + position.coords.latitude +
+                "<br>Longitude: " + position.coords.longitude;
+    }
+
+    //map page
+    var y = document.getElementById("map-canvas");
+    var mapLatitude;
+    var mapLongitude;
+    var myLatlng;
+
+    function getMapLocation() {
+        console.log("getMapLocation");
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showMapPosition);
+        } else {
+            y.innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+    function showMapPosition(position) {
+        console.log("showMapPosition");
+        mapLatitude = position.coords.latitude;
+        mapLongitude = position.coords.longitude;
+        myLatlng = new google.maps.LatLng(mapLatitude,mapLongitude);
+        getMap();
+    }
+
+
+    var map;
+    function getMap() {
+
+        var mapOptions = {
+            zoom: 12,
+            center: new google.maps.LatLng(mapLatitude, mapLongitude)
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+        console.log("Done");
+
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title:"You are here!"
+        });
+    }
+
+    //Mark carparks
+
+    var directionMap;
+    var infowindow;
+
+    function initMapMarker() {
+        var pyrmont = {lat: 6.79079200000000, lng: 79.9002103};
+
+        directionMap = new google.maps.Map(document.getElementById('direction-canvas'), {
+            center: pyrmont,
+            zoom: 12
+        });
+
+        infowindow = new google.maps.InfoWindow();
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch({
+            location: pyrmont,
+            radius: 500,
+            type: ['store']
+        }, callback);
+    }
+
+    function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            var array ;
+            {{#each parks}}
+                {{#each this}}
+                    createMarker("{{this.address}}")
+                {{/each}}
+            {{/each}}
+        }
+    }
+
+    function createMarker(place) {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode( { 'address': place}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK)
+            {
+
+                var marker = new google.maps.Marker({
+                    map: directionMap,
+                    position: results[0].geometry.location
+                });
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+            }
+        });
+
+    }
+
+    function initAutocomplete() {
+        var map = new google.maps.Map(document.getElementById('direction-canvas'));
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('start');
+        var searchBox = new google.maps.places.SearchBox(input);
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            // Clear out the old markers.
+            markers.forEach(function(marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+                if (!place.geometry) {
+                    console.log("Returned place contains no geometry");
+                    return;
+                }
+                var icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                };
+
+                // Create a marker for each place.
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: icon,
+                    title: place.name,
+                    position: place.geometry.location
+                }));
+
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+    }
+
+  //Direction
+    function initMapDirection() {
+
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        directionsDisplay.setMap(directionMap);
+
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+
+    }
+
+    function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        var dest = document.getElementById('destination');
+        var option = dest.options[dest.selectedIndex].value.split('.')[0];
+        console.log(option);
+        directionsService.route({
+            origin: document.getElementById('start').value.split('.')[0],
+            destination: option,
+            travelMode: 'DRIVING'
+        }, function(response, status) {
+            if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+
+</script>
+
+
+<script>
+    function openTab(evt, ID) {
+        var i, tabcontent, tablinks;
+
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(ID).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmDyfNoVy0qigSbK-Cp2PifbE_vyOyDGY&sensor=false&libraries=places&callback=initAutocomplete">
+</script>
+
+
+

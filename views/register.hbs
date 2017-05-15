@@ -1,0 +1,79 @@
+
+
+{{> header}}
+
+<h1>{{register}}</h1>
+<p> Register using the form below </p>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+<form  method="post" action="/users/register" >
+    <div class="form-group">
+        <label> Name </label>
+        <input class="form-control" name="name" type="text" placeholder="Enter your Name">
+    </div>
+    <div class="form-group">
+        <label> Email </label>
+        <input  class="form-control" name="email" type="email" placeholder="Enter your email" required>
+    </div>
+    <div class="form-group">
+        <label> Address </label>
+        <input  class="form-control" name="address" type="text" placeholder="Enter your address" required>
+    </div>
+    <div class="form-group">
+        <label>NIC Number  </label>
+        <input  class="form-control"  id="nic" name="nic" type="text" placeholder="Enter your NIC" onchange="validateNIC()" required>
+    </div>
+    <div class="form-group">
+        <label>Mobile Number </label>
+        <input  class="form-control"  id="number" name="number" type="text" placeholder="Enter your mobile number" onchange="validateNumber()" required>
+    </div>
+    <div class="form-group">
+        <label> Password </label>
+        <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Enter your pasword" required>
+    </div>
+    <div class="form-group">
+        <label> Confirm your password </label>
+        <input class="form-control" id="inputPassword2" name="password2" type="password" placeholder="Confirm password" onchange="validatePassword()" required>
+    </div>
+
+    <input class="form-control" name="submit" type="submit" value="register">
+
+</form>
+<script type="text/javascript">
+    function validatePassword() {
+
+        if (document.getElementById("inputPassword").value != document.getElementById("inputPassword2").value  && document.getElementById("inputPassword2").value != ''  && document.getElementById("inputPassword").value != '') {
+
+            window.alert("Passwords Dont Match");
+            // pw2.setCustomValidity("Passwords Don't Match");
+            // return false;
+        }
+
+    }
+    function validateNIC() {
+        var nic = document.getElementById("nic").value;
+        if(nic.length==9){
+            if(isNaN(nic)){
+                window.alert("Enter only the numbers");
+            }
+            else{
+                nic.innerHTML = nic+"v";
+            }
+        }else {
+            window.alert("Enter the correct nic number");
+        }
+
+    }
+    function validateNumber() {
+        var number = document.getElementById("number").value;
+        if(number.length==10){
+            if(isNaN(number)){
+                window.alert("Enter only the numbers");
+            }
+        }
+        else{
+            window.alert("Enter the number begining with 07..."+number.length)
+        }
+    }
+</script>
+

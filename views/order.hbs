@@ -1,0 +1,155 @@
+{{> userHeader}}
+
+<form  method="post" action="/users/order" >
+    <div class="form-group col-lg-12">
+        <div class="col-lg-4">
+            <label> Month </label>
+            <select class="form-control" id="month" name="month" required>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+        <div class="col-lg-4">
+            <label> Date </label>
+            <input class="form-control" id="date" name="date" type="text" placeholder="Enter Date"  onchange="validateMonth()" required>
+        </div>
+    </div>
+    <div class="form-group col-lg-12">
+        <div class="col-lg-4">
+            <label> Start Time </label>
+            <select class="form-control" id="start" name="start" required>
+                <option value="0">00:00</option>
+                <option value="1">01:00</option>
+                <option value="2">02:00</option>
+                <option value="3">03:00</option>
+                <option value="4">04:00</option>
+                <option value="5">05:00</option>
+                <option value="6">06:00</option>
+                <option value="7">07:00</option>
+                <option value="8">08:00</option>
+                <option value="9">09:00</option>
+                <option value="10">10:00</option>
+                <option value="11">11:00</option>
+                <option value="12">12:00</option>
+                <option value="13">13:00</option>
+                <option value="14">14:00</option>
+                <option value="15">15:00</option>
+                <option value="16">16:00</option>
+                <option value="17">17:00</option>
+                <option value="18">18:00</option>
+                <option value="19">19:00</option>
+                <option value="20">20:00</option>
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+            </select>
+        </div>
+        <div class="col-lg-4">
+            <label> End Time </label>
+            <select class="form-control" id="end" name="end" onchange="validateTime(),amountCalc()" required>
+                <option value="0">00:00</option>
+                <option value="1">01:00</option>
+                <option value="2">02:00</option>
+                <option value="3">03:00</option>
+                <option value="4">04:00</option>
+                <option value="5">05:00</option>
+                <option value="6">06:00</option>
+                <option value="7">07:00</option>
+                <option value="8">08:00</option>
+                <option value="9">09:00</option>
+                <option value="10">10:00</option>
+                <option value="11">11:00</option>
+                <option value="12">12:00</option>
+                <option value="13">13:00</option>
+                <option value="14">14:00</option>
+                <option value="15">15:00</option>
+                <option value="16">16:00</option>
+                <option value="17">17:00</option>
+                <option value="18">18:00</option>
+                <option value="19">19:00</option>
+                <option value="20">20:00</option>
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group col-lg-12">
+            <input class="form-control" id = "parkEmail" name="parkEmail" value={{parkEmail}} type="hidden">
+            <div class="col-sm-3">
+                <h3>Reservation Cost : </h3>
+            </div>
+            <div>
+                <input class="form-control" id = "amounth"  name="amount" type="hidden">
+                <h3 id = "amount"></h3>
+            </div>
+
+    </div>
+
+    <input class="form-control btn-primary" style="width: 33.3%; margin-left: 2%" name="submit" type="submit" value="ORDER">
+
+</form>
+
+<script type="text/javascript">
+    //Month Validation
+    function validateMonth() {
+        var z = document.getElementById("month").value;
+        var k = document.getElementById("date").value;
+        if (z=="January"||z=="March"||z=="May"||z=="July"||z=="August"||z=="October"||z=="December"){
+            if(isNaN(k)){
+                window.alert("Enter only the numbers");
+                k.value = "";
+            }
+            else if(k<0||k>31){
+                window.alert("Date doesn't exist");
+                k.innerHTML= "";
+            }
+        }
+        else if(z=="February"){
+            if(isNaN(k)){
+                window.alert("Enter only the numbers");
+                k.innerHTML = "";
+            }
+            else if(k<0||k>29){
+                window.alert("Date doesn't exist");
+                k.innerHTML = "";
+            }
+        }
+        else {
+            if(isNaN(k)){
+                window.alert("Enter only the numbers");
+                k.innerHTML = "";
+            }
+            else if(k<0||k>30){
+                window.alert("Date doesn't exist");
+                k.innerHTML = "";
+            }
+        }
+
+    }
+    //Time Validation
+    function validateTime() {
+        var start = document.getElementById("start").value;
+        var end = document.getElementById("end").value;
+        console.log(start+" "+end);
+        if(start>=end){
+            window.alert("Select correct time range")
+        }
+    }
+    function amountCalc(){
+        var start=document.getElementById("start").value;
+        var end = document.getElementById("end").value;
+        document.getElementById("amounth").value = (end-start)*{{price}};
+        document.getElementById("amount").innerHTML = (end-start)*{{price}};
+    }
+</script>

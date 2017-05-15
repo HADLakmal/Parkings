@@ -1,0 +1,27 @@
+{{>userHeader}}
+<p>{{title}}</p>
+
+<div class="container">
+        {{# each reservations}}
+            <div class="row">
+                {{# each this}}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h3>{{this.parkEmail}}</h3>
+                                <p class="discription">
+                                    <div>
+                                    Accept : {{this.accept}}
+                                    </div>
+                                    <div>
+                                        Email : {{this.parkEmail}}
+                                    </div>
+                                </p>
+                                <a href="#" class="btn btn-primary pull-left" role="button">Location</a>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        {{/each}}
+    </div>
