@@ -14,6 +14,7 @@ var manager = new Schema({
     email : {type:String,required:true},
     open: {type:String, required:true},
     close : {type:String,required:true},
+    capacity : {type:String,required:true},
     password:{type:String,required:true}
 
 });

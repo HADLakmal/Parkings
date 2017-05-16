@@ -213,6 +213,7 @@ router.post('/registerpark',function (req,res) {
     var price = req.body.price;
     var open = req.body.open;
     var close = req.body.close;
+    var capacity = req.body.capacity;
 
     //check for image field
 //    if(req.files.image){
@@ -252,6 +253,7 @@ router.post('/registerpark',function (req,res) {
         newPark.price = price;
         newPark.close = close;
         newPark.open = open;
+        newPark.capacity = capacity;
         newPark.save(function (err) {
             if(err) {
                 console.log("error");
