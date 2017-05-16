@@ -17,30 +17,32 @@
                     <i class="glyphicon glyphicon-envelope"></i> {{park.email}}
                     <br>
                     <i class="glyphicon glyphicon-phone"></i> {{park.number}}
-                    <br>
-                    <i class="glyphicon glyphicon-gift"></i>June 02, 1988</p>
-                <!-- Split button -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary">
-                        Social</button>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span><span class="sr-only">Social</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                        <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Github</a></li>
-                    </ul>
-                </div>
+
+
             </div>
         </div>
     </div>
 </div>
+<div class="col-xs-12 col-sm-6 col-md-6" style="font-family: 'Century Gothic'">
+    <div class= "col-lg-12 ">
+        <p style=" font-family: 'Century Gothic';font-size: x-large;color:blue">Count the Number of Vehical in and Out</p>
+    </div>
+    <div class= "col-lg-12 ">
+        <p style=" font-family: 'Century Gothic';font-size: x-large">Capacity left : {{reserved}}</p>
+        <p id="cap" ></p>
+    </div>
+    <div class= "col-lg-12 col-lg-offset-3" style="align-content: center">
+        <a href="/users/increment" class="btn btn-primary pull-left" style="height: 40px; width:40%;text-align: center"  role="button">Increment</a>
+    </div>
+    <div class= "col-lg-12 col-lg-offset-3" style="margin-top: 20px">
+        <a href="/users/decrement" class="btn btn-danger pull-left" style="height: 40px; width: 40%" role="button">Decrement</a>
+    </div>
+
+
+</div>
 <div class="container">
 
-<table style="width:100%">
+<table style="width:100%; font-family: 'Century Gothic'; margin-top: 20%">
   <tr>
     <th>Email</th>
     <th>Month</th>
@@ -60,7 +62,7 @@
                       <td>{{this.date}}</td>
                       <td>{{this.startTime}}</td>
                       <td>{{this.endTime}}</td>
-                      <td><a href="#" class="btn btn-primary pull-left" role="button">Accept</a></td>
+                      <td><a href="#" class="btn btn-primary pull-left" style="width: 30%;height: 20%" role="button">Accept</a></td>
                       </tr>
 
 

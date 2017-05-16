@@ -9,12 +9,12 @@ var manager = new Schema({
     address: {type:String, required:true},
     image: {type:String, required:true},
     price: {type:String},
-    number: {type:String, required:true},
-    nic: {type:String, required:true},
+    number: {type:Number, required:true},
+    nic: {type:Number, required:true},
     email : {type:String,required:true},
     open: {type:String, required:true},
     close : {type:String,required:true},
-    capacity : {type:String,required:true},
+    capacity : {type:Number,required:true},
     password:{type:String,required:true}
 
 });

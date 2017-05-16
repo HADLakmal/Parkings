@@ -30,15 +30,15 @@
     </div>
     <div class="form-group">
         <label>Price Of Ordering Car Parking Slot </label>
-        <input  class="form-control"  id="price" name="price" type="text" placeholder="Ordering available Enter the Price" >
+        <input  class="form-control"  id="price" name="price" type="text" onchange="valid()" placeholder="Ordering available Enter the Price" >
     </div>
     <div class="form-group">
         <label>Image</label>
-        <input  class="form-control"  id="image" name="image" type="test" placeholder="Place your CarPark Image URL here"  >
+        <input  class="form-control"  id="image" name="image" type="url" placeholder="Place your CarPark Image URL here"  required >
     </div>
     <div class="form-group">
             <label>Capacity of your car park </label>
-            <input  class="form-control"  id="capacity" name="capacity" type="text" placeholder="Enter the number of vehicle can park" >
+            <input  class="form-control"  id="capacity" name="capacity" type="text" onchange="valid()" placeholder="Enter the number of vehicle can park" required>
         </div>
     <div class="form-group col-lg-12">
             <div class="col-lg-4">
@@ -113,6 +113,20 @@
 
 </form>
 <script type="text/javascript">
+    function validateTime() {
+        var start = document.getElementById("start").value;
+        var end = document.getElementById("end").value;
+        console.log(start+" "+end);
+        if(start>=end){
+            window.alert("Select correct time range")
+        }
+    }
+    function valid(){
+        var price = document.getElementById("price").value;
+        if(isNaN(price)){
+            window.alert("Enter only the numbers");
+        }
+    }
     function validatePassword() {
 
         if (document.getElementById("inputPassword").value != document.getElementById("inputPassword2").value  && document.getElementById("inputPassword2").value != ''  && document.getElementById("inputPassword").value != '') {

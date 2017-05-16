@@ -16,6 +16,8 @@ var db = mongoose.connection;
 var reg = require('./models/register');
 var carpark = require('./models/managers');
 var reserve = require('./models/order');
+var carParkHistory = require('./models/carParkHistory');
+var userHistory = require('./models/userHistory');
 
 /* GET home page. */
 router.get('/register', function(req, res, next) {
@@ -138,14 +140,38 @@ router.post('/login',
 
                     }
                     if(user){
-
+                        var address = user.address;
+                        var newuserHistory = new userHistory();
+                        newuserHistory.email = email;
+                        newuserHistory.address = address;
+                        console.log(email+address);
+                        newuserHistory.save(function (err) {
+                                       if(err) {
+                                           console.log("error");
+                                           throw err;
+                                       }
+                                   });
                         res.redirect('/users/customer?name='+email);
                     }
 
                 });
             }
-            else if(user)
-                res.redirect('/users/carpark?name='+email);
+            else if(user){
+            var capacity = user.capacity;
+            var newhistory = new carParkHistory();
+            newhistory.email = email;
+            newhistory.capacity = capacity;
+            newhistory.fill = "0";
+            console.log(email+capacity);
+            newhistory.save(function (err) {
+                          if(err) {
+                              console.log("error");
+                              throw err;
+                          }
+                      });
+            res.redirect('/users/carpark?name='+email);
+            }
+
             });
 });
 function getParks(callback) {
@@ -179,14 +205,49 @@ router.get('/customer', ensureAuthenticated,function(req, res, next) {
 });
 
 router.get('/carpark',ensureAuthenticated, function(req, res, next) {
-        reserve.find({parkEmail:req.user.email , accept:"false"},function (err,reserves) {
-                    var reservations = [];
-                    var chunksize = 10;
-                    for(var i=0;i<reserves.length;i+=chunksize){
-                        reservations.push(reserves.slice(i,i+chunksize));
+        carpark.findOne({email:req.user.email},function (err,user) {
+                    if(err){
+                        console.log("error");
+                    }
+                    else if (user){
+                        reserve.find({parkEmail:req.user.email , accept:"false" },function(err,reserves){
+                            var reservations = [];
+                            //var lengths = reserves.length;
+                            if(err){
+                                console.log("error");
+                            }
+                            else if(!reserves){
+                                console.log("Error");
+                            }else{
+                                carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
+                                    function (err,history){
+                                        if(err){
+                                            console.log("error");
+                                        }else if(!history){
+                                            console.log("No usr");
+                                        }else if(history){
+
+                                            var chunksize = 10;
+
+                                            var length = user.capacity-reserves.length-history.fill;
+                                            console.log(length);
+                                            for(var i=0;i<reserves.length;i+=chunksize){
+                                                reservations.push(reserves.slice(i,i+chunksize));
+                                            }
+                                            res.render('carpark', { title: req.user.email, reservations: reservations,park : user, reserved: length});
+                                        }});
+
+
+                            }
+
+
+                        });
+                    }
+                    else {
+
                     }
 
-                    res.render('carpark', { title: req.user.email, reservations: reservations});
+
                 });
 //    carpark.findOne({email:req.query.name},function (err,user) {
 //        if (err) {
@@ -382,5 +443,68 @@ router.post('/useredit', function(req, res, next) {
     );
     res.redirect('/users/customer');
 });
+
+//Car park details view
+
+router.get('/view', function(req, res, next) {
+    res.render('view', { title: req.user.email });
+});
+
+//Count the parking size
+router.get('/increment', function(req, res, next) {
+
+    carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
+        function (err,user){
+            if(err){
+                console.log("error");
+            }else if(!user){
+                console.log("No usr");
+            }else if(user){
+                var filled = user.fill+1;
+                if(user.fill==0) filled = 0;
+                carParkHistory.findOneAndUpdate({ email: req.user.email , date: {$gte: new Date().getDate()} },
+                    { $set: { date: new Date(),fill : filled } },
+                    {upsert: true },
+                    function (err,user){
+                        if(err){
+                            console.log("error");
+                        }else if(!user){
+                            console.log("No usr");
+                        }else if(user)
+                            res.redirect('/users/carpark');
+                    }
+                );
+            }
+        }
+    );
+});
+
+router.get('/decrement', function(req, res, next) {
+    carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
+        function (err,user){
+            if(err){
+                console.log("error");
+            }else if(!user){
+                console.log("No usr");
+            }else if(user){
+                var filled = user.fill-1;
+                if(user.fill==0) filled = 0;
+                carParkHistory.findOneAndUpdate({ email: req.user.email , date: {$gte: new Date().getDate()} },
+                    { $set: { date: new Date(),fill : filled } },
+                    {upsert: true },
+                    function (err,user){
+                        if(err){
+                            console.log("error");
+                        }else if(!user){
+                            console.log("No usr");
+                        }else if(user)
+                            res.redirect('/users/carpark');
+                    }
+                );
+            }
+        }
+    );
+});
+
 
 module.exports = router;
