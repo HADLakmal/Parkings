@@ -457,7 +457,59 @@ router.post('/useredit', function(req, res, next) {
 //Car park details view
 
 router.get('/view', function(req, res, next) {
-    res.render('view', { title: req.user.email });
+    var email = req.query.email;
+    console.log(email);
+    carpark.findOne({email:req.query.email},function (err,user) {
+        if(err){
+            console.log("error");
+        }
+        if(!user){
+            console.log("wrong1");
+        }
+        if(user){
+            var carparks  = user;
+            reserve.find({email:email,accept:"false"},function (err,user) {
+                if(err){
+                    console.log("error");
+                }
+                if(!user){
+                    console.log("wrong2");
+                }
+                if(user){
+                    var falseReserve  = user.length;
+                    reserve.find({email:email,accept:"true"},function (err,user) {
+                        if(err) {
+                            console.log("error");
+                        }
+                        if(!user){
+                            console.log("wrong3");
+                        }
+                        if(user){
+                            var trueReserve = user.length;
+                            reserve.find({},function (err,user) {
+                                if(err){
+                                    console.log("error");
+                                }
+                                if(!user){
+                                    console.log("wrong4");
+                                }
+                                if (user){
+                                    var all = user.length;
+                                    res.render('view', { title: req.user.email ,park :carparks,falseR:falseReserve,trueR : trueReserve , all : all});
+                                }
+                            });
+                        }
+                    });
+                }
+
+            });
+        }
+    });
+
+
+
+
+
 });
 
 //Count the parking size
