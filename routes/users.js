@@ -50,6 +50,7 @@ router.post('/register',function (req,res) {
    var address = req.body.address;
    var nic = req.body.nic;
    var email = req.body.email;
+   var image = req.body.image;
    //Form validation
     req.checkBody('body','Body field is required');
 
@@ -66,6 +67,7 @@ router.post('/register',function (req,res) {
         newUser.password = password;
         newUser.nic = nic;
         newUser.number = number;
+        newUser.image = image;
         newUser.save(function (err) {
             if(err) {
                 console.log("error");
@@ -187,14 +189,22 @@ function getParks(callback) {
 }
 router.get('/customer', ensureAuthenticated,function(req, res, next) {
 
-    reserve.find({userEmail:req.user.email},function (err,reserves) {
-            var reservations = [];
-            var chunksize = 10;
-            for(var i=0;i<reserves.length;i+=chunksize){
-                reservations.push(reserves.slice(i,i+chunksize));
-            }
-            res.render('customer', { title: req.user.email, reservations: reservations});
-        });
+    reg.findOne({email:req.user.email},function (err,user) {
+        if(err){
+            console.log("error");
+        }
+        else if(user) {
+            reserve.find({userEmail:req.user.email},function (err,reserves) {
+                var reservations = [];
+                var chunksize = 10;
+                for(var i=0;i<reserves.length;i+=chunksize){
+                    reservations.push(reserves.slice(i,i+chunksize));
+                }
+                res.render('customer', { title: req.user.email, reservations: reservations,customer : user});
+            });
+        }
+    });
+
 //        var names = '';
 //    getParks(function (parks) {
 //        console.log(parks);
@@ -506,5 +516,24 @@ router.get('/decrement', function(req, res, next) {
     );
 });
 
+//Accept Reservation
+router.get('/accept', function(req, res, next) {
+
+    reserve.findOneAndUpdate({ parkEmail:req.user.email,userEmail: req.query.userEmail, accept:"false"},
+        { $set: { accept: "true" } },
+        {upsert: true },
+        function (err,user){
+            if(err){
+                console.log("error");
+            }else if(!user){
+
+            }
+            else if(user){
+                res.redirect('/users/carpark');
+            }
+
+        }
+    );
+});
 
 module.exports = router;

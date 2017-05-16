@@ -62,7 +62,7 @@
                       <td>{{this.date}}</td>
                       <td>{{this.startTime}}</td>
                       <td>{{this.endTime}}</td>
-                      <td><a href="#" class="btn btn-primary pull-left" style="width: 30%;height: 20%" role="button">Accept</a></td>
+                      <td><a href="/users/accept?userEmail={{this.userEmail}}" class="btn btn-primary pull-left" style="width: 30%;height: 20%" role="button">Accept</a></td>
                       </tr>
 
 
@@ -71,3 +71,8 @@
           {{/each}}
 </table>
 </div>
+<script>
+    function deleteRow() {
+
+    }
+</script>
