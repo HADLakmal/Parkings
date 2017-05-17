@@ -20,6 +20,44 @@
         height: 40px;
         width: 100%;
     }
+    #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+    }
+
+    #right-panel select, #right-panel input {
+        font-size: 15px;
+    }
+
+    #right-panel select {
+        width: 100%;
+    }
+
+    #right-panel i {
+        font-size: 12px;
+    }
+    #right-panel {
+        height: 100%;
+        width: 50%;
+        float: right;
+        width: 390px;
+        overflow: auto;
+    }
+    #direction-canvas {
+        margin-right: 400px;
+        width: 60%;
+    }
+    @media print {
+        #direction-canvas {
+            height: 500px;
+            margin: 0;
+        }
+        #right-panel {
+            float: none;
+            width: auto;
+        }
+    }
 </style>
 <div class="tab">
     <button style="width: 33%" class="btn btn-lg btn-primary" onclick="openTab(event, 'CuLocation'),getLocation(),getMapLocation()">Current Location</button>
@@ -49,6 +87,7 @@
 
         <input onclick="initMapDirection()" type="submit" name="submit" value="Direction" style="width: 33%;margin-top: 10px" class="btn btn-lg btn-primary">
     </div>
+    <div  id="right-panel"></div>
     <div id="direction-canvas"></div>
 </div>
 
@@ -63,6 +102,10 @@
                             <img src="{{this.image}}" alt="...">
                             <div class="caption">
                                 <h3>{{this.userName}}</h3>
+                                <div>
+                                    <input type="button" onclick="nearestPark('{{this.address}}')">
+                                </div>
+
                                 <p class="discription">
                                     <div>
                                     Contact : {{this.number}}
@@ -168,7 +211,7 @@
             var array ;
             {{#each parks}}
                 {{#each this}}
-                    createMarker("{{this.address}}")
+                    createMarker("{{this.address}}");
                 {{/each}}
             {{/each}}
         }
@@ -256,6 +299,7 @@
 
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer;
+        directionsDisplay.setPanel(document.getElementById('right-panel'));
         directionsDisplay.setMap(directionMap);
 
         calculateAndDisplayRoute(directionsService, directionsDisplay);
@@ -297,6 +341,44 @@
         document.getElementById(ID).style.display = "block";
         evt.currentTarget.className += " active";
     }
+    var myStart;
+    function nearestPark(end) {
+        if (navigator.geolocation) {
+            console.log(end);
+            navigator.geolocation.getCurrentPosition(myPosition);
+            console.log(calcDistances(myStart,end));
+            return calcDistances(myStart,end);
+
+
+        } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+
+        return (calcDistances(p1, p2));
+
+    }
+    //calculates distance between two points in km's
+    function calcDistances(p1, p2) {
+        var directionsService = new google.maps.DirectionsService();
+        console.log(p1,p2);
+        directionsService.route({
+            origin: p1,
+            destination: p2,
+            travelMode: 'DRIVING'
+        }, function(response, status) {
+            if (status === 'OK') {
+                alert( response.routes[0].legs[0].distance.value );;
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+    function myPosition(position) {
+        mapLatitude = position.coords.latitude;
+        mapLongitude = position.coords.longitude;
+        myStart = new google.maps.LatLng(mapLatitude,mapLongitude);
+    }
+
 </script>
 
 <script async defer

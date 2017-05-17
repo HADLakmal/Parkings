@@ -5,6 +5,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
 var regSchema = new Schema({
     userName: {type:String, required:true},
     address: {type:String, required:true},

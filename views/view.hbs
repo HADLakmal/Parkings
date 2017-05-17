@@ -24,21 +24,18 @@
 
       function drawChart() {
 
-          var f= {{falseR}};
-          var t = {{trueR}};
+          var f= {{fill}};
           var all = {{all}};
           var car = {{park.capacity}};
         var data = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Eat',      2],
-          ['Commute',  2],
-          ['Watch TV', 2],
-          ['Sleep',    7]
+          ['capacity', 'Number of spaces'],
+          ['capacity',     car],
+          ['Filled',      f],
+          ['Reservations',  all]
         ]);
 
         var options = {
-          title: 'My Daily Activities'
+          title: 'Parking Status'
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));

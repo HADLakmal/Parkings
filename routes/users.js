@@ -19,6 +19,13 @@ var reserve = require('./models/order');
 var carParkHistory = require('./models/carParkHistory');
 var userHistory = require('./models/userHistory');
 
+//controllers
+var carparks = require('./Controller/carparkControl');
+var reserves = require('./Controller/reserveController');
+var users = require('./Controller/userController');
+var userHistories = require('./Controller/userHistoryController');
+var parkHistories = require('./Controller/carparkHistoryController');
+
 /* GET home page. */
 router.get('/register', function(req, res, next) {
     res.render('register', {
@@ -92,16 +99,9 @@ passport.use(new LocalStrategy({
         passwordField: 'password'
     },
     function(username, password, done) {
-        carpark.findOne({email: username, password: password}, function (err, user) {
-            if (err) {
-                console.log("error");
-                return done(err);
-            }
+        carparks.findUser(username,password,function (user) {
             if (!user) {
-                reg.findOne({email: username, password: password}, function (err, user) {
-                    if (err) {
-
-                    }
+                users.findUser(username,password,function (user) {
                     if (user) {
                     console.log("customer");
                         return done(null, user);
@@ -132,15 +132,9 @@ router.post('/login',
         var email = req.body.email;
         var password = req.body.password;
 
-        carpark.findOne({email:email, password:password},function (err,user) {
-            if (err){
-
-            }
-            if(!user){
-                reg.findOne({email:email, password:password},function (err,user) {
-                    if (err){
-
-                    }
+        carparks.findUser(email,password,function (user) {
+            if (!user) {
+                users.findUser(email,password,function (user) {
                     if(user){
                         var address = user.address;
                         var newuserHistory = new userHistory();
@@ -189,11 +183,8 @@ function getParks(callback) {
 }
 router.get('/customer', ensureAuthenticated,function(req, res, next) {
 
-    reg.findOne({email:req.user.email},function (err,user) {
-        if(err){
-            console.log("error");
-        }
-        else if(user) {
+    users.findDetails(req.user,function (user) {
+        if(user) {
             reserve.find({userEmail:req.user.email},function (err,reserves) {
                 var reservations = [];
                 var chunksize = 10;
@@ -215,11 +206,8 @@ router.get('/customer', ensureAuthenticated,function(req, res, next) {
 });
 
 router.get('/carpark',ensureAuthenticated, function(req, res, next) {
-        carpark.findOne({email:req.user.email},function (err,user) {
-                    if(err){
-                        console.log("error");
-                    }
-                    else if (user){
+        carparks.findDetail(req.user,function (user) {
+                    if (user){
                         reserve.find({parkEmail:req.user.email , accept:"false" },function(err,reserves){
                             var reservations = [];
                             //var lengths = reserves.length;
@@ -229,11 +217,9 @@ router.get('/carpark',ensureAuthenticated, function(req, res, next) {
                             else if(!reserves){
                                 console.log("Error");
                             }else{
-                                carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
-                                    function (err,history){
-                                        if(err){
-                                            console.log("error");
-                                        }else if(!history){
+                                parkHistories.findHistory(req.user,new Date().getDate(),
+                                    function (history){
+                                        if(!history){
                                             console.log("No usr");
                                         }else if(history){
 
@@ -259,12 +245,6 @@ router.get('/carpark',ensureAuthenticated, function(req, res, next) {
 
 
                 });
-//    carpark.findOne({email:req.query.name},function (err,user) {
-//        if (err) {
-//            res.send(500, 'showAlert');
-//        }
-//        res.render('carpark', { title:user.userName ,park : user });
-//    });
 
 });
 
@@ -285,21 +265,6 @@ router.post('/registerpark',function (req,res) {
     var open = req.body.open;
     var close = req.body.close;
     var capacity = req.body.capacity;
-
-    //check for image field
-//    if(req.files.image){
-//        console.log("upload file");
-//        //File info
-//        var imageOriginalName = req.files.image.originalname;
-//        image = req.files.image.name;
-//        var imageMime = req.files.image.mimetype;
-//        var imagePath = req.files.image.path;
-//        var imageExt = req.files.image.extension;
-//        var imageSize = req.files.image.size;
-//    }
-//    else {
-//        image = 'my.png';
-//    }
 
     if(image==null){
         image = "https://img.clipartfest.com/f299c94db4557c59605fcd19d92f5afe_small-car-park-mdpng-car-park-clipart_299-258.png";
@@ -345,12 +310,10 @@ router.get('/logout', function(req, res) {
 
 //Ordering
 router.get('/order', function(req, res, next) {
-    carpark.findOne({email:req.query.reserve},function (err,user) {
-            if (err) {
-                res.send(500, 'showAlert');
-            }
-            res.render('order', { title: req.user.email, price : user.price, parkEmail: user.email});
-        });
+    console.log(req.query.reserve);
+    carparks.findPrice(req.query,function (user) {
+        res.render('order', { title: req.user.email, price : user.price, parkEmail: user.email});
+    })
 
 });
 
@@ -458,51 +421,33 @@ router.post('/useredit', function(req, res, next) {
 
 router.get('/view', function(req, res, next) {
     var email = req.query.email;
-    console.log(email);
-    carpark.findOne({email:req.query.email},function (err,user) {
-        if(err){
-            console.log("error");
-        }
+
+    carparks.findView(req.query,function (user) {
         if(!user){
             console.log("wrong1");
         }
         if(user){
             var carparks  = user;
-            reserve.find({email:email,accept:"false"},function (err,user) {
-                if(err){
-                    console.log("error");
-                }
-                if(!user){
-                    console.log("wrong2");
-                }
-                if(user){
-                    var falseReserve  = user.length;
-                    reserve.find({email:email,accept:"true"},function (err,user) {
-                        if(err) {
-                            console.log("error");
-                        }
-                        if(!user){
-                            console.log("wrong3");
-                        }
-                        if(user){
-                            var trueReserve = user.length;
-                            reserve.find({},function (err,user) {
-                                if(err){
-                                    console.log("error");
-                                }
-                                if(!user){
+            carParkHistory.findOne({ email: req.query.email , date: {$gte: new Date().getDate()} },
+                function (err,user){
+                    if(err){
+                        console.log("error");
+                    }else if(!user){
+                        console.log("No usr");
+                    }else if(user){
+                            var Fill = user.fill;
+                            reserves.findAll(function (length) {
+                                console.log(length);
+                                if(!length){
                                     console.log("wrong4");
                                 }
-                                if (user){
-                                    var all = user.length;
-                                    res.render('view', { title: req.user.email ,park :carparks,falseR:falseReserve,trueR : trueReserve , all : all});
+                                if (length){
+                                    var all = length;
+                                    res.render('view', { title: req.user.email ,park :carparks,fill:Fill, all : all});
                                 }
                             });
                         }
                     });
-                }
-
-            });
         }
     });
 
@@ -515,15 +460,13 @@ router.get('/view', function(req, res, next) {
 //Count the parking size
 router.get('/increment', function(req, res, next) {
 
-    carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
-        function (err,user){
-            if(err){
-                console.log("error");
-            }else if(!user){
+    parkHistories.findHistory(req.user,new Date().getDate(),
+        function (user){if(!user){
                 console.log("No usr");
             }else if(user){
                 var filled = user.fill+1;
-                if(user.fill==0) filled = 0;
+                if(user.fill==user.capacity) filled = user.capacity;
+                if(user.fill<0) filled = 0;
                 carParkHistory.findOneAndUpdate({ email: req.user.email , date: {$gte: new Date().getDate()} },
                     { $set: { date: new Date(),fill : filled } },
                     {upsert: true },
@@ -542,11 +485,9 @@ router.get('/increment', function(req, res, next) {
 });
 
 router.get('/decrement', function(req, res, next) {
-    carParkHistory.findOne({ email: req.user.email , date: {$gte: new Date().getDate()} },
-        function (err,user){
-            if(err){
-                console.log("error");
-            }else if(!user){
+    parkHistories.findHistory(req.user,new Date().getDate(),
+        function (user){
+            if(!user){
                 console.log("No usr");
             }else if(user){
                 var filled = user.fill-1;
