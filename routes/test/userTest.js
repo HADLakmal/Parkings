@@ -9,19 +9,19 @@ var expect = require('chai').expect;
 describe('User Controller', function () {
 
     describe('Get Detail Of the User', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             usertest.findDetails(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });
 
     describe('Find User by requested email', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             usertest.findUser(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });

@@ -10,10 +10,10 @@ var expect = require('chai').expect;
 describe('Car Park History Controller', function () {
 
     describe('Connect with existing history', function () {
-        it('should return array', function (done) {
+        it('should return array', function () {
             parkhistory.findHistory(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });

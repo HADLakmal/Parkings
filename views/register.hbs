@@ -3,10 +3,10 @@
 {{> header}}
 
 <h1>{{register}}</h1>
-<p> Register using the form below </p>
+<h2 style="color: #5e5e5e"> Register using the form below </h2>
 <link rel='stylesheet' href='/stylesheets/style.css' />
 <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
-<form  method="post" action="/users/register" >
+<form  method="post" action="/users/register" style="font-family: 'Century Gothic';font-size: x-large" >
     <div class="form-group">
         <label> Name </label>
         <input class="form-control" name="name" type="text" placeholder="Enter your Name">
@@ -14,6 +14,9 @@
     <div class="form-group">
         <label> Email </label>
         <input  class="form-control" name="email" type="email" placeholder="Enter your email" required>
+    </div>
+    <div style="color: red">
+        {{error}}
     </div>
     <div class="form-group">
         <label> Address </label>
@@ -27,10 +30,12 @@
         <label>NIC Number  </label>
         <input  class="form-control"  id="nic" name="nic" type="text" placeholder="Enter your NIC" onchange="validateNIC()" required>
     </div>
+    <div id="error" style="color: red"></div>
     <div class="form-group">
         <label>Mobile Number </label>
         <input  class="form-control"  id="number" name="number" type="text" placeholder="Enter your mobile number" onchange="validateNumber()" required>
     </div>
+    <div id="errors" style="color: red"></div>
     <div class="form-group">
         <label> Password </label>
         <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Enter your pasword" required>
@@ -58,13 +63,15 @@
         var nic = document.getElementById("nic").value;
         if(nic.length==9){
             if(isNaN(nic)){
-                window.alert("Enter only the numbers");
+                document.getElementById("nic").value = "";
+                document.getElementById("error").innerHTML = "Enter the correct number"
             }
             else{
                 nic.innerHTML = nic+"v";
             }
         }else {
-            window.alert("Enter the correct nic number");
+            document.getElementById("nic").value = "";
+            document.getElementById("error").innerHTML = "Enter the correct number";
         }
 
     }
@@ -73,10 +80,13 @@
         if(number.length==10){
             if(isNaN(number)){
                 window.alert("Enter only the numbers");
+                document.getElementById("number").value = "";
+                document.getElementById("errors").innerHTML = "Enter the number";
             }
         }
         else{
-            window.alert("Enter the number begining with 07..."+number.length)
+            document.getElementById("number").value = "";
+            document.getElementById("errors").innerHTML = "Enter the number";
         }
     }
 </script>

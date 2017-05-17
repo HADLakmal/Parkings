@@ -49,3 +49,13 @@ module.exports.findDetail = function (query,next) {
     })
 };
 
+module.exports.findExisting = function (email,next) {
+    carpark.findOne({email: email}, function (err, user) {
+        if (err) {
+            res.send(500, 'showAlert');
+        }
+        else {
+            next(user);
+        }
+    })
+};

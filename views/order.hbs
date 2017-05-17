@@ -103,52 +103,46 @@
 <script type="text/javascript">
     //Month Validation
     function validateMonth() {
-        var z = document.getElementById("month").value;
-        var k = document.getElementById("date").value;
+        var z = +document.getElementById("month").value;
+        var k = +document.getElementById("date").value;
         if (z=="January"||z=="March"||z=="May"||z=="July"||z=="August"||z=="October"||z=="December"){
             if(isNaN(k)){
-                window.alert("Enter only the numbers");
-                k.value = "";
+                k = "";
             }
             else if(k<0||k>31){
-                window.alert("Date doesn't exist");
-                k.innerHTML= "";
+                k= "";
             }
         }
         else if(z=="February"){
             if(isNaN(k)){
-                window.alert("Enter only the numbers");
-                k.innerHTML = "";
+                k= "";
             }
             else if(k<0||k>29){
-                window.alert("Date doesn't exist");
-                k.innerHTML = "";
+                k= "";
             }
         }
         else {
             if(isNaN(k)){
-                window.alert("Enter only the numbers");
-                k.innerHTML = "";
+                k= "";
             }
             else if(k<0||k>30){
-                window.alert("Date doesn't exist");
-                k.innerHTML = "";
+                k= "";
             }
         }
 
     }
     //Time Validation
     function validateTime() {
-        var start = document.getElementById("start").value;
-        var end = document.getElementById("end").value;
+        var start = +document.getElementById("start").value;
+        var end = +document.getElementById("end").value;
         console.log(start+" "+end);
         if(start>=end){
             window.alert("Select correct time range")
         }
     }
     function amountCalc(){
-        var start=document.getElementById("start").value;
-        var end = document.getElementById("end").value;
+        var start= +document.getElementById("start").value;
+        var end = +document.getElementById("end").value;
         document.getElementById("amounth").value = (end-start)*{{price}};
         document.getElementById("amount").innerHTML = (end-start)*{{price}};
     }

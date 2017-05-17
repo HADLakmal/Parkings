@@ -9,36 +9,36 @@ var expect = require('chai').expect;
 describe('Car Park Controller', function () {
 
     describe('Login user using username and password', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             carparktest.findUser(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });
 
     describe('Get Detail Of the User', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             carparktest.findDetail(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });
     describe('Get the prices using id', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             carparktest.findPrice(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });
 
     describe('Whole details for view car details', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             carparktest.findView(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });

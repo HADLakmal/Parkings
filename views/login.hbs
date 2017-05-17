@@ -3,10 +3,10 @@
 {{> header}}
 
 <div style="text-align: center">
-    <h1>{{title}}</h1>
+    <h1 >{{title}}</h1>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
-    <form  method="post" action="/users/login" style="text-align: center; width: 33.3%;margin-left: 33.3%">
+    <form  method="post" action="/users/login" style="text-align: center; width: 33.3%;margin-left: 33.3%;font-family: 'Century Gothic';font-size: large">
         <div class="form-group" style="text-align: center">
             <input class="form-control" name="email" type="email" placeholder="Enter your email" required>
         </div>
@@ -16,7 +16,7 @@
         <div style="color: red">
             {{error}}
         </div>
-        <input class="form-control" name="submit" type="submit" value="Login" style="background-color: #00B7FF">
+        <input class="form-control" name="submit" type="submit" value="Login" style="font-family: 'Century Gothic';background-color: rgba(72,96,163,0.89);font-size: large;color: #080808">
 
     </form>
 </div>

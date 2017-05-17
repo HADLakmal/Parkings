@@ -26,3 +26,14 @@ module.exports.findDetails = function (user,next) {
         }
     })
 };
+
+module.exports.findExisting = function (email,next) {
+    users.findOne({email: email}, function (err, user) {
+        if (err) {
+            res.send(500, 'showAlert');
+        }
+        else {
+            next(user);
+        }
+    })
+};

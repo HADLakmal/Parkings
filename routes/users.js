@@ -29,7 +29,7 @@ var parkHistories = require('./Controller/carparkHistoryController');
 /* GET home page. */
 router.get('/register', function(req, res, next) {
     res.render('register', {
-        title: 'Register' });
+        title: 'Register', error : req.query.error });
 });
 
 router.get('/direction', ensureAuthenticated ,function(req, res, next) {
@@ -63,28 +63,35 @@ router.post('/register',function (req,res) {
 
     var errors = req.validationErrors();
 
-    if(errors){
+    users.findExisting(email,function (user) {
+        if(user){
+            res.redirect('/users/register?error='+"Email already exist");
+        }
+        else {
+            if(errors){
 
-    }
-    else {
-        var newUser = new reg();
-        newUser.userName = name;
-        newUser.address = address;
-        newUser.email = email;
-        newUser.password = password;
-        newUser.nic = nic;
-        newUser.number = number;
-        newUser.image = image;
-        newUser.save(function (err) {
-            if(err) {
-                console.log("error");
-                throw err;
             }
-        });
-        console.log("Allright");
-        res.redirect('/');
+            else {
+                var newUser = new reg();
+                newUser.userName = name;
+                newUser.address = address;
+                newUser.email = email;
+                newUser.password = password;
+                newUser.nic = nic;
+                newUser.number = number;
+                newUser.image = image;
+                newUser.save(function (err) {
+                    if(err) {
+                        console.log("error");
+                        throw err;
+                    }
+                });
+                console.log("Allright");
+                res.redirect('/');
 
-    }
+            }
+        }
+    });
 
 });
 
@@ -250,7 +257,7 @@ router.get('/carpark',ensureAuthenticated, function(req, res, next) {
 
 
 router.get('/registerpark', function(req, res, next) {
-    res.render('registerpark', { title: "Register Car Park" });
+    res.render('registerpark', { title: "Register Car Park" ,error : req.query.error});
 });
 
 router.post('/registerpark',function (req,res) {
@@ -272,33 +279,41 @@ router.post('/registerpark',function (req,res) {
     //Form validation
     req.checkBody('body','Body field is required');
 
-    var errors = req.validationErrors();
+    carparks.findExisting(email,function (user) {
+        if(user){
+            res.redirect('/users/registerpark?error='+"Email already exist");
+        }
+        else {
+            var errors = req.validationErrors();
 
-    if(errors){
+            if(errors){
 
-    }
-    else {
-        var newPark = new carpark();
-        newPark.userName = name;
-        newPark.address = address;
-        newPark.email = email;
-        newPark.password = password;
-        newPark.number = number;
-        newPark.nic = nic;
-        newPark.image = image;
-        newPark.price = price;
-        newPark.close = close;
-        newPark.open = open;
-        newPark.capacity = capacity;
-        newPark.save(function (err) {
-            if(err) {
-                console.log("error");
-                throw err;
             }
-        });
-        res.redirect('/');
+            else {
+                var newPark = new carpark();
+                newPark.userName = name;
+                newPark.address = address;
+                newPark.email = email;
+                newPark.password = password;
+                newPark.number = number;
+                newPark.nic = nic;
+                newPark.image = image;
+                newPark.price = price;
+                newPark.close = close;
+                newPark.open = open;
+                newPark.capacity = capacity;
+                newPark.save(function (err) {
+                    if(err) {
+                        console.log("error");
+                        throw err;
+                    }
+                });
+                res.redirect('/');
 
-    }
+            }
+        }
+    });
+
 
 });
 //Logout

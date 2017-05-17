@@ -9,19 +9,19 @@ var expect = require('chai').expect;
 describe('Reservation Controller', function () {
 
     describe('Get number of reservations', function () {
-        it('should return number', function (done) {
+        it('should return number', function () {
             reservetest.findAll(function (data) {
                 expect(data).not.to.be.NaN;
-                done();
+                // done();
             })
         });
     });
 
     describe('Get all reservation details ', function () {
-        it('should return an array', function (done) {
+        it('should return an array', function () {
             reservetest.allReserves(function (data) {
                 expect(data).to.be.a('array');
-                done();
+                // done();
             })
         });
     });

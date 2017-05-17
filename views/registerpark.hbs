@@ -3,10 +3,10 @@
 {{> header}}
 
 <h1>{{register}}</h1>
-<p> Register using the form below </p>
+<h2 style="color: #5e5e5e"> Register using the form below </h2>
 <link rel='stylesheet' href='/stylesheets/style.css' />
 <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
-<form  method="post" action="/users/registerpark" >
+<form  method="post" action="/users/registerpark" style="font-family: 'Century Gothic';font-size: x-large" >
     <div class="form-group">
         <label> Name </label>
         <input class="form-control" name="name" type="text" placeholder="Enter your Name">
@@ -14,6 +14,9 @@
     <div class="form-group">
         <label> Email </label>
         <input  class="form-control" name="email" type="email" placeholder="Enter your email" required>
+    </div>
+    <div style="color: red">
+        {{error}}
     </div>
     <div class="addressControl">
         <label> Address </label>
@@ -24,14 +27,17 @@
         <label>NIC Number  </label>
         <input  class="form-control"  id="nic" name="nic" type="text" placeholder="Enter your NIC" onchange="validateNIC()" required>
     </div>
+    <div id="errr" style="color: red"></div>
     <div class="form-group">
         <label>Mobile Number </label>
         <input  class="form-control"  id="number" name="number" type="text" placeholder="Enter your mobile number" onchange="validateNumber()" required>
     </div>
+    <div id="wrong" style="color: red"></div>
     <div class="form-group">
         <label>Price Of Ordering Car Parking Slot </label>
         <input  class="form-control"  id="price" name="price" type="text" onchange="valid()" placeholder="Ordering available Enter the Price" >
     </div>
+    <div id="errors" style="color: red"></div>
     <div class="form-group">
         <label>Image</label>
         <input  class="form-control"  id="image" name="image" type="url" placeholder="Place your CarPark Image URL here"  required >
@@ -100,6 +106,7 @@
                 </select>
             </div>
         </div>
+    <div id="error" style="color: red"></div>
     <div class="form-group">
         <label> Password </label>
         <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Enter your pasword" required>
@@ -108,30 +115,34 @@
         <label> Confirm your password </label>
         <input class="form-control" id="inputPassword2" name="password2" type="password" placeholder="Confirm password" onchange="validatePassword()" required>
     </div>
+    <div id="err" style="color: red"></div>
 
-    <input class="form-control" name="submit" type="submit" value="register">
+    <input class="form-control" name="submit" type="submit" value="register" style="background-color: #00B7FF;font-size: large;font-family: 'Century Gothic'">
 
 </form>
 <script type="text/javascript">
     function validateTime() {
-        var start = document.getElementById("start").value;
-        var end = document.getElementById("end").value;
+        var start = +document.getElementById("open").value;
+        var end = +document.getElementById("close").value;
         console.log(start+" "+end);
         if(start>=end){
-            window.alert("Select correct time range")
+            document.getElementById("error").innerHTML = "Start time should less than end time";
         }
     }
     function valid(){
         var price = document.getElementById("price").value;
         if(isNaN(price)){
-            window.alert("Enter only the numbers");
+            document.getElementById("price").value = "";
+            document.getElementById("errors").innerHTML = "Enter only the numbers";
         }
     }
     function validatePassword() {
 
         if (document.getElementById("inputPassword").value != document.getElementById("inputPassword2").value  && document.getElementById("inputPassword2").value != ''  && document.getElementById("inputPassword").value != '') {
 
-            window.alert("Passwords Dont Match");
+            document.getElementById("inputPassword").value = "";
+            document.getElementById("inputPassword2").value = "";
+            document.getElementById("err").innerHTML = "Password doesn't match";
             // pw2.setCustomValidity("Passwords Don't Match");
             // return false;
         }
@@ -141,13 +152,15 @@
         var nic = document.getElementById("nic").value;
         if(nic.length==9){
             if(isNaN(nic)){
-                window.alert("Enter only the numbers");
+                document.getElementById("nic").value = "";
+                document.getElementById("errr").innerHTML = "Enter only the numbers";
             }
             else{
                 nic.innerHTML = nic+"v";
             }
         }else {
-            window.alert("Enter the correct nic number");
+            document.getElementById("nic").value = "";
+            document.getElementById("errr").innerHTML = "Enter correct format";
         }
 
     }
@@ -155,11 +168,13 @@
         var number = document.getElementById("number").value;
         if(number.length==10){
             if(isNaN(number)){
-                window.alert("Enter only the numbers");
+                document.getElementById("number").value = "";
+                document.getElementById("wrong").innerHTML = "Enter numbers only";
             }
         }
         else{
-            window.alert("Enter the number begining with 07...")
+            document.getElementById("number").value = "";
+            document.getElementById("wrong").innerHTML = "Enter the number begining with 07...";
         }
     }
 
@@ -229,14 +244,6 @@
             map.fitBounds(bounds);
         });
     }
-    function validateTime() {
-            var start = document.getElementById("start").value;
-            var end = document.getElementById("end").value;
-            console.log(start+" "+end);
-            if(start>=end){
-                window.alert("Select correct time range")
-            }
-        }
 
 </script>
 <style>
