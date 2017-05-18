@@ -103,7 +103,7 @@
                             <div class="caption">
                                 <h3>{{this.userName}}</h3>
                                 <div>
-                                    <input type="button" onclick="nearestPark('{{this.address}}')">
+                                    <input type="button" onclick="nearestPark('{{this.email}}','{{this.address}}')">
                                 </div>
 
                                 <p class="discription">
@@ -114,8 +114,9 @@
                                         Email : {{this.email}}
                                     </div>
                                 </p>
+                                <div id="{{this.email}}" name="{{this.email}}"></div>
                                 <div class="clearfix">
-                                    <a href="/users/view?email={{this.email}}" class="btn btn-primary pull-left" role="button">View</a>
+                                    <a href="/users/view?email={{this.email}}" onclick="nearestPark('{{this.email}}','{{this.address}}'),location.href=this.href+'&value='+distanceValue;return false;" class="btn btn-primary pull-left" role="button">View</a>
                                     <a href="/users/order?reserve={{this.email}}" class="btn btn-success pull-right" role="button">Reservation</a>
                                 </div>
 
@@ -129,6 +130,7 @@
 
 </div>
 <script >
+    var distanceValue;
 
     var x = document.getElementById("geoLocation");
     function getLocation() {
@@ -341,42 +343,57 @@
         document.getElementById(ID).style.display = "block";
         evt.currentTarget.className += " active";
     }
-    var myStart;
-    function nearestPark(end) {
+    var endPosition;
+    var emails;
+    function nearestPark(email ,end) {
         if (navigator.geolocation) {
             console.log(end);
             navigator.geolocation.getCurrentPosition(myPosition);
-            console.log(calcDistances(myStart,end));
-            return calcDistances(myStart,end);
+            endPosition = end;
+            emails = email;
 
 
         } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
         }
 
-        return (calcDistances(p1, p2));
-
     }
     //calculates distance between two points in km's
-    function calcDistances(p1, p2) {
+    function calcDistances(lang,long) {
         var directionsService = new google.maps.DirectionsService();
-        console.log(p1,p2);
-        directionsService.route({
-            origin: p1,
-            destination: p2,
-            travelMode: 'DRIVING'
-        }, function(response, status) {
+        var geocoder = new google.maps.Geocoder;
+        var p1;
+        var latlng = {lat: lang, lng: long};
+        geocoder.geocode({'location': latlng}, function(results, status) {
             if (status === 'OK') {
-                alert( response.routes[0].legs[0].distance.value );;
+                if (results[1]) {
+                    p1=(results[1].formatted_address).toString();
+                    console.log(p1);
+                    directionsService.route({
+                        origin: p1,
+                        destination: endPosition,
+                        travelMode: 'DRIVING'
+                    }, function(response, status) {
+                        if (status === 'OK') {
+                            console.log(emails);
+                            distanceValue =  (response.routes[0].legs[0].distance.value)/1000.0;
+                        } else {
+                            window.alert('Directions request failed due to ' + status);
+                        }
+                    });
+                } else {
+                    window.alert('No results found');
+                }
             } else {
-                window.alert('Directions request failed due to ' + status);
+                window.alert('Geocoder failed due to: ' + status);
             }
         });
     }
     function myPosition(position) {
         mapLatitude = position.coords.latitude;
         mapLongitude = position.coords.longitude;
-        myStart = new google.maps.LatLng(mapLatitude,mapLongitude);
+        console.log(mapLatitude+" "+mapLongitude);
+        calcDistances(mapLatitude,mapLongitude);
     }
 
 </script>

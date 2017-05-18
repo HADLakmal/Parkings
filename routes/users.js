@@ -324,7 +324,7 @@ router.get('/logout', function(req, res) {
 });
 
 //Ordering
-router.get('/order', function(req, res, next) {
+router.get('/order', ensureAuthenticated,function(req, res, next) {
     console.log(req.query.reserve);
     carparks.findPrice(req.query,function (user) {
         res.render('order', { title: req.user.email, price : user.price, parkEmail: user.email});
@@ -332,7 +332,7 @@ router.get('/order', function(req, res, next) {
 
 });
 
-router.post('/order', function(req, res, next) {
+router.post('/order', ensureAuthenticated,function(req, res, next) {
 
     var parkEmail = req.body.parkEmail;
     var userEmail = req.user.email;
@@ -376,11 +376,11 @@ router.post('/order', function(req, res, next) {
 
 //car park edit
 
-router.get('/carparkedit', function(req, res, next) {
+router.get('/carparkedit',ensureAuthenticated, function(req, res, next) {
     res.render('carparkedit', { title: req.user.email });
 });
 
-router.post('/carparkedit', function(req, res, next) {
+router.post('/carparkedit', ensureAuthenticated,function(req, res, next) {
 
     var name = req.body.name;
     var number = req.body.number;
@@ -405,11 +405,11 @@ router.post('/carparkedit', function(req, res, next) {
 
 //customer edit
 
-router.get('/useredit', function(req, res, next) {
+router.get('/useredit',ensureAuthenticated, function(req, res, next) {
     res.render('customeredit', { title: req.user.email });
 });
 
-router.post('/useredit', function(req, res, next) {
+router.post('/useredit', ensureAuthenticated,function(req, res, next) {
 
     var name = req.body.name;
     var number = req.body.number;
@@ -434,8 +434,9 @@ router.post('/useredit', function(req, res, next) {
 
 //Car park details view
 
-router.get('/view', function(req, res, next) {
+router.get('/view', ensureAuthenticated,function(req, res, next) {
     var email = req.query.email;
+    var value = req.query.value;
 
     carparks.findView(req.query,function (user) {
         if(!user){
@@ -458,7 +459,7 @@ router.get('/view', function(req, res, next) {
                                 }
                                 if (length){
                                     var all = length;
-                                    res.render('view', { title: req.user.email ,park :carparks,fill:Fill, all : all});
+                                    res.render('view', { title: req.user.email ,park :carparks,fill:Fill, all : all,distance:value});
                                 }
                             });
                         }
@@ -473,7 +474,7 @@ router.get('/view', function(req, res, next) {
 });
 
 //Count the parking size
-router.get('/increment', function(req, res, next) {
+router.get('/increment',ensureAuthenticated, function(req, res, next) {
 
     parkHistories.findHistory(req.user,new Date().getDate(),
         function (user){if(!user){
@@ -499,7 +500,7 @@ router.get('/increment', function(req, res, next) {
     );
 });
 
-router.get('/decrement', function(req, res, next) {
+router.get('/decrement', ensureAuthenticated,function(req, res, next) {
     parkHistories.findHistory(req.user,new Date().getDate(),
         function (user){
             if(!user){
@@ -525,7 +526,7 @@ router.get('/decrement', function(req, res, next) {
 });
 
 //Accept Reservation
-router.get('/accept', function(req, res, next) {
+router.get('/accept',ensureAuthenticated, function(req, res, next) {
 
     reserve.findOneAndUpdate({ parkEmail:req.user.email,userEmail: req.query.userEmail, accept:"false"},
         { $set: { accept: "true" } },
